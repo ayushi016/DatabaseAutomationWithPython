@@ -4,7 +4,7 @@ from pymongo import MongoClient
 
 def connect_to_database():
         client = MongoClient('localhost', 27017)
-        # connect to database, it will create if not exists
+        # connect to databaseAutomation, it will create if not exists
         session = client.demo
         return session
 

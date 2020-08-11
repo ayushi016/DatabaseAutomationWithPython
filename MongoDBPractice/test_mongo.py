@@ -1,39 +1,39 @@
 from datetime import datetime
-
 import pytest
 from pymongo import MongoClient
+import unittest
 
 
-@pytest.fixture
-def connect_to_database(request):
+class test_CollectionRepository(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls) -> None:
         client = MongoClient('localhost', 27017)
-        # connect to database, it will create if not exists
-        session = client.demo
-        return session
+        # connect to databaseAutomation, it will create if not exists
+        cls.session = client.demo
+        cls.collection_name = 'employee'
 
-
-@pytest.fixture
-class test_CollectionRepository(connect_to_database):
-
-    def __init__(self):
-        # self.session = session
-        self.collection_name = 'employee'
+    @classmethod
+    def tearDownClass(cls) -> None:
+        print("all test case run")
 
     def test_create(self):
         if self.collection_name not in self.session.list_collection_names():
             self.session.create_collection(self.collection_name)
             assert self.collection_name in self.session.list_collection_names()
 
+    def test_list_all_collection(self):
+        list1 = self.session.list_collection_names()
+        for r in list1:
+            print(r)
+        assert self.collection_name in list1
+
+    @pytest.mark.dependency(depends=["test_list_all_collection"])
     def test_delete(self):
         self.session.drop_collection(self.collection_name)
         # self.session[self.collection_name].drop()
         assert self.collection_name not in self.session.list_collection_names()
 
-    def test_list_all_collection(self):
-        list = self.session.list_collection_names()
-        for r in list:
-            print(r)
-        assert self.collection_name in list
 
 
 class DocumentRepository:
